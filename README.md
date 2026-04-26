@@ -81,12 +81,7 @@ Avg Monthly Charges = AVERAGE(customers[MonthlyCharges])
 ---
 
 ## Dashboard Preview
-
-<!-- Take a screenshot of your Power BI dashboard -->
-<!-- Save it as dashboard_preview.png in the repo root folder -->
-<!-- Then replace the line below with: ![Dashboard](telco_customer_churn.png) -->
-
-*Dashboard screenshot coming soon.*
+![Dashboard](telco_customer_churn.png) -->
 
 ---
 
