@@ -1,13 +1,13 @@
 # Telco Customer Churn Analysis
 ## Overview
-Analysis of 7,043 customer records from a fictional telecommunications company using MySQL and Power BI.
-The project investigates a 26.54% churn rate — roughly 1 in 4 customers was leaving the business — and identifies the key drivers behind churn across contract types, tenure, internet service, payment methods, and customer demographics.
+Churn analysis of a fictional telecommunications company (synthetic Kaggle dataset, 7,043 customers), framed as if advising the Head of Customer Retention. Just over 1 in 4 customers churned (26.5%), representing about $139K in lost monthly revenue. With a limited retention budget, the question was where to focus it.
+**Recommendation:** target new fiber customers on month-to-month contracts during their first three months, offering an annual contract, protection services and automatic payment. This segment churns at 55% and accounts for 72% of lost revenue.
 
 ---
 
 ## Author
 **Belén Micó Velarde**  
-[LinkedIn](https://www.linkedin.com/in/belenmicov)
+[LinkedIn](https://www.linkedin.com/in/belenmicovelarde)
 
 ---
 
