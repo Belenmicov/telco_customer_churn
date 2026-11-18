@@ -84,12 +84,11 @@ Each level reaches more churners but with a lower rate, so the budget starts at 
 
 ## Approach
 
-The goal was not to list churn drivers, but to turn each data point into something the retention team could act on.
+- **Data cleaning.** The first churn rate came out at 0%, which contradicted the 1,869 churners seen during profiling. The cause was a hidden Windows character (`\r`) added to every Churn value during the CSV import. I also set 11 blank `TotalCharges` values to 0: they matched the 11 customers with zero tenure, who had not been billed yet.
+- **Checking each finding.** Several drivers overlap, so I crossed them with the contract type to see whether they still mattered on their own. I also checked that the combined risk profile actually exists (544 customers, 74% churn).
+- **Prioritising by money.** With a limited budget, I compared segments by revenue at risk per customer contacted, not only by churn rate.
 
-- **Data cleaning.** The first churn rate came out at 0%, which contradicted the 1,869 churners seen during profiling. I isolated the issue to the `Churn = 'Yes'` filter and found a hidden Windows carriage return (`\r`) attached to every value during the CSV import. I also found 11 blank `TotalCharges` values that matched exactly the 11 customers with zero tenure: new customers not yet billed, so I set them to 0 rather than NULL.
-- **Checking findings before acting on them.** Several drivers overlap: most new customers are on monthly contracts, and most customers with tech support are on long ones. I crossed each driver with the contract type to see whether it still mattered on its own. Fiber and the first year did; tech support only did for month-to-month customers, which shaped who the offer should target.
-- **Checking the combined profile.** The findings were partly analysed separately, so I filtered the customers who match every risk factor at once. The profile exists (544 customers, 74% churn), but it covers 22% of churners, which led to a tiered recommendation rather than a single target.
-- **Prioritising by money, not just by rate.** Large segments lose the most revenue in total, but with a limited budget the key figure is the revenue at risk per customer contacted. That made fiber + month-to-month the most efficient place to start.
+The full analysis, with every query commented, is in [`telco_customer_churn_analysis.sql`](telco_customer_churn_analysis.sql).
 
 The full analysis, with every query commented with what it checks and what it found, is in [`telco_customer_churn_analysis.sql`](telco_customer_churn_analysis.sql).
 
