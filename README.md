@@ -88,8 +88,6 @@ Each level reaches more churners but with a lower rate, so the budget starts at 
 - **Checking each finding.** Several drivers overlap, so I crossed them with the contract type to see whether they still mattered on their own. I also checked that the combined risk profile actually exists (544 customers, 74% churn).
 - **Prioritising by money.** With a limited budget, I compared segments by revenue at risk per customer contacted, not only by churn rate.
 
-The full analysis, with every query commented, is in [`telco_customer_churn_analysis.sql`](telco_customer_churn_analysis.sql).
-
 The full analysis, with every query commented with what it checks and what it found, is in [`telco_customer_churn_analysis.sql`](telco_customer_churn_analysis.sql).
 
 ---
