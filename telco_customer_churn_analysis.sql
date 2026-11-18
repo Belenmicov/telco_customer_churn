@@ -36,10 +36,6 @@
 -- 0. SETUP
 -- ============================================================================
 
--- TotalCharges is loaded as text on purpose: the raw CSV contains blank values
--- in that column. Loading it as text keeps them visible so they can be checked
--- and fixed before converting the column to a number (see section 2).
-
 CREATE TABLE telco_customer (
     customerID       VARCHAR(20),
     gender           VARCHAR(10),
@@ -63,9 +59,6 @@ CREATE TABLE telco_customer (
     TotalCharges     VARCHAR(20),
     Churn            VARCHAR(10)
 );
-
--- Replace the path with the location of the CSV file.
--- If local_infile is disabled: SET GLOBAL local_infile = 1;
 
 LOAD DATA LOCAL INFILE 'path/to/WA_Fn-UseC_-Telco-Customer-Churn.csv'
 INTO TABLE telco_customer
