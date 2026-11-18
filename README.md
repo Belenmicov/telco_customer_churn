@@ -20,94 +20,152 @@ Churn analysis of a fictional telecommunications company (synthetic Kaggle datas
 ## Dataset
 - **Source:** [Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) (Kaggle)
 - **Volume:** 7,043 customer records · 21 columns
-- **Key columns:** Churn, Contract, Tenure, InternetService, PaymentMethod, MonthlyCharges, TotalCharges, SeniorCitizen, TechSupport
+# Telco Customer Churn Analysis
+
+## Overview
+
+Churn analysis of a fictional telecommunications company (synthetic Kaggle dataset, 7,043 customers), framed as if advising the Head of Customer Retention. Just over 1 in 4 customers churned (26.5%), representing about $139K in lost monthly revenue. With a limited retention budget, the question was where to focus it.
+
+**Recommendation:** target new fiber customers on month-to-month contracts during their first three months, offering an annual contract, protection services and automatic payment. This segment churns at 55% and accounts for 72% of lost revenue.
+
+**Tools:** MySQL · Power BI · DAX
 
 ---
 
-## Project Structure
-```
-telco-customer-churn/
-│
-├── README.md
-├── dashboard_preview.png
-├── telco_customer_churn_analysis.sql
-└── telco_customer_churn_dashboard.pbix
-```
+## Author
+
+**Belén Micó Velarde**
+[LinkedIn](https://www.linkedin.com/in/belenmicov)
 
 ---
 
-## Data Cleaning
+## Business Problem
 
-Two data quality issues were identified and resolved before analysis:
-
-**1. TotalCharges stored as text with blank strings**  
-The column was imported as text and contained empty string values for customers with tenure = 0. These were not detected by a standard NULL check and required a separate query to identify. Blank strings were converted to NULL for correct numerical handling.
-
-**2. Windows carriage return characters in the Churn column**  
-All churn-based aggregations initially returned 0. A HEX inspection revealed that each value contained a hidden \r character (0x0D) appended at the end — a byproduct of Windows CSV formatting. REPLACE() was used to clean the column before analysis.
+- **Client:** Head of Customer Retention, who owns the retention budget.
+- **Pain:** they can see customers leaving every month, but not which customers are most at risk or why. Retention works blind: everyone is treated the same, or action comes only when a customer calls to cancel. Budget goes to customers who would have stayed anyway, while those at real risk are missed.
+- **Decision:** which customer segments and which levers to focus retention on, with a limited budget that cannot cover every customer.
 
 ---
 
-## SQL Analysis Structure
+## Business Questions & Metrics
 
-**Phase 1 — Data Exploration & Cleaning**  
-Verified import integrity, checked for NULLs and blank strings, identified and resolved the carriage return issue, and explored the distribution of key categorical dimensions and tenure groups.
+1. Which types of customers churn the most?
+2. Do customers with certain services churn less than those without?
+3. Do contract and payment conditions affect churn?
+4. Do customers who pay more churn more?
+5. How many customers and how much monthly revenue are lost per segment?
 
-**Phase 2 — Core Churn Analysis**  
-Six queries covering overall churn rate, churn by contract type, churn by tenure group, churn by internet service, churn by payment method, and average charges by churn status.
-
-**Phase 2 — Supplementary Analysis**  
-Four additional queries covering churn by senior citizen status, churn by tech support subscription, churn by gender, and a high-risk customer profile combining all four primary churn indicators.
-
----
-
-## Power BI Dashboard Structure
-
-KPI Cards --> Total Customers · Churned Customers · Churn Rate · Avg Monthly Charges  
-Core Findings --> Churn by Contract Type · Churn by Tenure Group · Churn by Internet Service  
-Supporting Insights --> Churn by Payment Method · Churn by Senior Status · Churn by Tech Support
-
----
-
-## DAX Measures Created
-```
-Churn Flag = IF(TRIM(customers[Churn]) = "Yes", 1, 0)
-Total Customers = COUNTROWS(customers)
-Churned Customers = SUM(customers[Churn Flag])
-Churn Rate = DIVIDE([Churned Customers], [Total Customers], 0)
-Avg Monthly Charges = AVERAGE(customers[MonthlyCharges])
-```
-
----
-
-## Dashboard Preview
-![Dashboard](telco_customer_churn.png) -->
+| Role | Metric | Why |
+|---|---|---|
+| Primary | Churn rate (%) | Measures risk and allows comparing both segments and levers |
+| Supporting | Monthly revenue lost | Covers what the rate misses: group size and how much each customer pays |
+| Diagnostic | Churn rate by service, contract and payment method | Explains why a segment churns more |
 
 ---
 
 ## Key Findings
 
-- **Overall churn rate: 26.54%** — 1,869 out of 7,043 customers left the business.
-- **Contract type is the strongest predictor of churn.** Month-to-month customers churn at 42.71% compared to 2.83% for two-year contract customers — a 15x difference.
-- **New customers are the most vulnerable segment.** Customers in their first 12 months churn at 47.44%. That rate drops to 6.61% for customers with 60+ months of tenure.
-- **Fiber optic customers churn at 41.89%** — more than double the DSL rate of 18.96% — despite paying higher monthly charges, suggesting a price-to-value problem.
-- **Electronic check is the highest-risk payment method** at 45.29%, compared to 15-19% for automatic payment methods.
-- **Senior citizens churn at 41.68%** versus 23.61% for non-seniors.
-- **Customers without tech support churn at 41.64%** compared to 15.17% for those who have it — add-on services reduce cancellation likelihood.
-- **Gender shows no meaningful difference** in churn rate (Female: 26.92% · Male: 26.16%).
-- **High-risk customer profile:** Customers on a month-to-month contract, in their first 12 months, with fiber optic internet, paying by electronic check churn at **71.16%** — nearly 3x the company average.
+1. **Month-to-month contracts drive churn.** They churn at 42.7% (vs 2.8% for two-year contracts) and account for 89% of all churners.
+2. **Fiber + month-to-month is the most critical segment.** 54.6% churn and 72% of lost revenue, with $47 at risk per customer (vs $32-36 in other segments). Fiber churns more than DSL under every contract type, so the problem is not explained by the contract alone.
+3. **The first months are the riskiest.** New month-to-month customers churn at 51%, and more than half of them leave within the first three months. Within the same contract, new customers churn 18 points more than long-standing ones.
+4. **Protection services go with lower churn.** Customers without online security or tech support churn at about 42% vs about 15% with them. The gap holds among month-to-month customers (20 points for tech support), where most churn happens.
+5. **Electronic check customers churn at 45%,** vs 15-17% for automatic payment methods.
+6. **Price alone does not explain churn.** Within the same internet service, churners pay the same or less than customers who stay.
+
+*Also checked:* gender, streaming, phone services and paperless billing show no meaningful or actionable difference.
 
 ---
 
-## Business Recommendations
+## Recommendation
 
-- **Convert month-to-month customers to longer contracts.** The 15x churn rate difference is the single biggest lever available. Discounts or service upgrades for customers who commit to annual or two-year plans could significantly reduce overall churn.
-- **Focus retention efforts on the first 12 months.** With a 47.44% churn rate in year one, early engagement campaigns and onboarding touchpoints are critical.
-- **Investigate the fiber optic value proposition.** Fiber customers pay more but leave more. Pricing, service quality, or competitive alternatives may be driving dissatisfaction in this segment.
-- **Encourage automatic payment enrollment.** Customers on automatic payment methods churn at 15-16% versus 45% for electronic check users.
-- **Promote add-on services as a retention tool.** Customers with tech support churn at less than half the rate of those without it — proactively offering add-ons to new and high-risk customers increases product stickiness.
+Focus the retention budget on new fiber customers on month-to-month contracts during their first three months, offering an annual contract, protection services and automatic payment.
+
+**Who**, in order of priority depending on budget:
+
+| Priority | Segment | Customers | Churn rate | Share of churners |
+|---|---|---|---|---|
+| 1 | Full risk profile: new, month-to-month, fiber, no online security, no tech support, electronic check | 544 | 74% | 22% |
+| 2 | Fiber + month-to-month | 2,128 | 55% | 62% |
+| 3 | First year + month-to-month | 1,994 | 51% | 55% |
+
+Each level reaches more churners but with a lower rate, so the budget starts at the top. Priority 1 gets the most intensive action (personal contact, best offer); the others get a standard program.
+
+**When:** from day one and during the first three months, when more than half of new customers leave.
+
+**What to offer:**
+- An annual contract, so the customer is committed.
+- Free online security and tech support for a trial period, to increase perceived value.
+- An incentive to switch to automatic payment, so the decision is not reconsidered every month.
+
+**How to measure it:** run the offer on part of the segment and keep a control group without it, then compare churn after one quarter before rolling it out further.
+
+**What not to do:** general discounts (price alone does not explain churn), removing electronic check (forcing 2,365 customers to switch could trigger churn), or going back to paper billing (not a likely cause and adds cost).
 
 ---
 
-## Notes
-This project was built using a synthetic dataset from Kaggle for portfolio purposes. The analytical framework, SQL structure, DAX measures, and dashboard design reflect the approach that would be applied to a real telecommunications dataset to identify churn drivers and inform customer retention strategy.
+## Approach
+
+The goal was not to list churn drivers, but to turn each data point into something the retention team could act on.
+
+- **Data cleaning.** The first churn rate came out at 0%, which contradicted the 1,869 churners seen during profiling. I isolated the issue to the `Churn = 'Yes'` filter and found a hidden Windows carriage return (`\r`) attached to every value during the CSV import. I also found 11 blank `TotalCharges` values that matched exactly the 11 customers with zero tenure: new customers not yet billed, so I set them to 0 rather than NULL.
+- **Checking findings before acting on them.** Several drivers overlap: most new customers are on monthly contracts, and most customers with tech support are on long ones. I crossed each driver with the contract type to see whether it still mattered on its own. Fiber and the first year did; tech support only did for month-to-month customers, which shaped who the offer should target.
+- **Checking the combined profile.** The findings were partly analysed separately, so I filtered the customers who match every risk factor at once. The profile exists (544 customers, 74% churn), but it covers 22% of churners, which led to a tiered recommendation rather than a single target.
+- **Prioritising by money, not just by rate.** Large segments lose the most revenue in total, but with a limited budget the key figure is the revenue at risk per customer contacted. That made fiber + month-to-month the most efficient place to start.
+
+The full analysis, with every query commented with what it checks and what it found, is in [`telco_customer_churn_analysis.sql`](telco_customer_churn_analysis.sql).
+
+---
+
+## Dashboard
+
+Built in Power BI, connected directly to the cleaned MySQL table, so the dashboard and the SQL analysis use the same data.
+
+**Where to Act**: size of the problem, the riskiest segment, where revenue is lost and when to act.
+
+![Where to Act](dashboard_page1.png)
+
+**Why Customers Leave**: churn rate by payment method, protection services and contract.
+
+![Why Customers Leave](dashboard_page2.png)
+
+**DAX measures**
+
+```
+Total Customers   = COUNTROWS(telco_customer)
+Churned Customers = CALCULATE(COUNTROWS(telco_customer), telco_customer[Churn] = "Yes")
+Churn Rate        = DIVIDE([Churned Customers], [Total Customers])
+Revenue Lost      = CALCULATE(SUM(telco_customer[MonthlyCharges]), telco_customer[Churn] = "Yes")
+```
+
+---
+
+## Limitations
+
+- **Correlation, not causation.** The data shows what goes with churn, not what causes it. Crossing variables rules out some explanations, which is why the recommendation includes a control group.
+- **A single snapshot.** There is no time dimension, so it is not possible to tell whether these patterns are stable, seasonal or changing.
+- **No satisfaction or service quality data.** It is not possible to confirm why fiber churns more: price, technical issues or support.
+- **No competitor or promotion data.** It is unknown whether customers leave for cheaper offers, or whether new customers joined through temporary promotions.
+- **No cost data for retention actions.** Return on the retention program, and how far down the priority list it pays off, cannot be calculated.
+- **Simplified revenue estimate.** Lost revenue is based on monthly charges; the annual figure assumes churned customers would have stayed one more year.
+- **Full churn only.** Customers who drop services without leaving (downgrades) are not captured.
+- **Synthetic dataset.** Patterns may not reflect a real telecom company.
+
+---
+
+## Dataset, Tools & Repository
+
+- **Source:** [Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) (Kaggle)
+- **Volume:** 7,043 customers · 21 columns (demographics, tenure, services, contract and billing, churn)
+- **Tools:** MySQL (profiling, cleaning and analysis) · Power BI and DAX (dashboard)
+
+```
+telco-customer-churn/
+│
+├── README.md
+├── telco_customer_churn_analysis.sql
+├── telco_customer_churn_dashboard.pbix
+├── dashboard_page1.png
+└── dashboard_page2.png
+```
+
+*This project uses a synthetic dataset for portfolio purposes. There was no real client: the analysis was framed around a Head of Customer Retention to give it a concrete business decision.*
