@@ -1,6 +1,7 @@
 # Telco Customer Churn Analysis
 ## Overview
 Churn analysis of a fictional telecommunications company (synthetic Kaggle dataset, 7,043 customers), framed as if advising the Head of Customer Retention. Just over 1 in 4 customers churned (26.5%), representing about $139K in lost monthly revenue. With a limited retention budget, the question was where to focus it.
+
 **Recommendation:** target new fiber customers on month-to-month contracts during their first three months, offering an annual contract, protection services and automatic payment. This segment churns at 55% and accounts for 72% of lost revenue.
 
 ---
@@ -14,28 +15,6 @@ Churn analysis of a fictional telecommunications company (synthetic Kaggle datas
 ## Tools
 - **MySQL** --> data exploration, cleaning, and analysis
 - **Power BI** --> interactive dashboard and DAX measures
-
----
-
-## Dataset
-- **Source:** [Telco Customer Churn](https://www.kaggle.com/datasets/blastchar/telco-customer-churn) (Kaggle)
-- **Volume:** 7,043 customer records · 21 columns
-# Telco Customer Churn Analysis
-
-## Overview
-
-Churn analysis of a fictional telecommunications company (synthetic Kaggle dataset, 7,043 customers), framed as if advising the Head of Customer Retention. Just over 1 in 4 customers churned (26.5%), representing about $139K in lost monthly revenue. With a limited retention budget, the question was where to focus it.
-
-**Recommendation:** target new fiber customers on month-to-month contracts during their first three months, offering an annual contract, protection services and automatic payment. This segment churns at 55% and accounts for 72% of lost revenue.
-
-**Tools:** MySQL · Power BI · DAX
-
----
-
-## Author
-
-**Belén Micó Velarde**
-[LinkedIn](https://www.linkedin.com/in/belenmicov)
 
 ---
 
